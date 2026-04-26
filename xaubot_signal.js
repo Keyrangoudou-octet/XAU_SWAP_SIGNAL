@@ -489,16 +489,12 @@ async function run() {
   }
 }
 
-console.log("XAUUSD SMC Bot démarré ✅");
-sendTelegram(
-  "🥇 XAUUSD SMC Signal Bot demarre\n\n" +
-  "Strategie: Smart Money Concepts\n" +
-  "Logique: CHoCH + Liq Sweep + BOS + Golden Zone\n" +
-  "Sessions: London + New York\n" +
-  "Paire: XAU/USD M5\n" +
-  "Compte: FTMO Challenge\n\n" +
-  "Signaux uniquement pendant les Kill Zones"
-);
+console.log("XAUUSD SMC Bot demarre");
+sendTelegram("🥇 XAUUSD SMC Signal Bot demarre!\n\nStrategie: CHoCH + Liq Sweep + BOS + Golden Zone\nSessions: London + New York\nPaire: XAU/USD M5\nCompte: FTMO Challenge").then(() => {
+  console.log("Message Telegram envoye");
+}).catch(e => {
+  console.error("Telegram erreur:", e.message);
+});
 
 run();
 setInterval(run, 60 * 1000);
