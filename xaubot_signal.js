@@ -491,13 +491,13 @@ async function run() {
 
 console.log("XAUUSD SMC Bot démarré ✅");
 sendTelegram(
-  "🥇 *XAUUSD SMC Signal Bot*\n\n" +
-  "Stratégie: Smart Money Concepts\n" +
+  "🥇 XAUUSD SMC Signal Bot demarre\n\n" +
+  "Strategie: Smart Money Concepts\n" +
   "Logique: CHoCH + Liq Sweep + BOS + Golden Zone\n" +
-  "Sessions: London 🇬🇧 + New York 🇺🇸\n" +
+  "Sessions: London + New York\n" +
   "Paire: XAU/USD M5\n" +
   "Compte: FTMO Challenge\n\n" +
-  "_Signaux uniquement pendant les Kill Zones_"
+  "Signaux uniquement pendant les Kill Zones"
 );
 
 run();
