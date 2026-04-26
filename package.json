@@ -1,0 +1,7 @@
+{
+  "name": "xau-signal",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node xaubot_signal.js"
+  }
+}
