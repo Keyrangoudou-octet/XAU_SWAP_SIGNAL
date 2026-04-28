@@ -395,33 +395,28 @@ function analyzeSMC(candles) {
 // ─────────────────────────────────────────────
 
 async function fetchXAUCandles() {
-  // Frankfurter + MetalPrice API pour XAUUSD OHLC M5
-  // On utilise l'API publique de Stooq pour les données gold
-  const url = "https://stooq.com/q/d/l/?s=xauusd&i=5"; // CSV OHLC M5
-  return new Promise((resolve, reject) => {
-    https.get(url, { headers: { "User-Agent": "Mozilla/5.0" } }, res => {
-      let data = "";
-      res.on("data", d => data += d);
-      res.on("end", () => {
-        try {
-          const lines = data.trim().split("\n").slice(1); // skip header
-          const candles = lines.slice(-250).map(line => {
-            const [date, time, open, high, low, close, vol] = line.split(",");
-            return {
-              open:  parseFloat(open),
-              high:  parseFloat(high),
-              low:   parseFloat(low),
-              close: parseFloat(close),
-              vol:   parseFloat(vol) || 0,
-            };
-          }).filter(c => !isNaN(c.close));
-          if (candles.length < 50) throw new Error("Not enough candles: " + candles.length);
-          resolve(candles);
-        } catch(e) { reject(e); }
-      });
-    }).on("error", reject);
-  });
+  // Twelve Data API — XAUUSD M5 real OHLC data
+  const apiKey = process.env.TWELVE_DATA_KEY || "f7bdc6c27e9f4cec9effabb7b8664893";
+  const url = `https://api.twelvedata.com/time_series?symbol=XAU/USD&interval=5min&outputsize=150&apikey=${apiKey}`;
+  const data = await get(url);
+
+  if (data.status === "error") {
+    throw new Error("Twelve Data error: " + data.message);
+  }
+  if (!data.values || data.values.length === 0) {
+    throw new Error("No candles from Twelve Data");
+  }
+
+  // Twelve Data retourne du plus récent au plus ancien — on inverse
+  return data.values.reverse().map(c => ({
+    open:  parseFloat(c.open),
+    high:  parseFloat(c.high),
+    low:   parseFloat(c.low),
+    close: parseFloat(c.close),
+    vol:   0,
+  }));
 }
+
 
 // ─────────────────────────────────────────────
 //  MAIN LOOP
@@ -489,12 +484,16 @@ async function run() {
   }
 }
 
-console.log("XAUUSD SMC Bot demarre");
-sendTelegram("🥇 XAUUSD SMC Signal Bot demarre!\n\nStrategie: CHoCH + Liq Sweep + BOS + Golden Zone\nSessions: London + New York\nPaire: XAU/USD M5\nCompte: FTMO Challenge").then(() => {
-  console.log("Message Telegram envoye");
-}).catch(e => {
-  console.error("Telegram erreur:", e.message);
-});
+console.log("XAUUSD SMC Bot démarré ✅");
+sendTelegram(
+  "🥇 XAUUSD SMC Signal Bot demarre\n\n" +
+  "Strategie: Smart Money Concepts\n" +
+  "Logique: CHoCH + Liq Sweep + BOS + Golden Zone\n" +
+  "Sessions: London + New York\n" +
+  "Paire: XAU/USD M5\n" +
+  "Compte: FTMO Challenge\n\n" +
+  "Signaux uniquement pendant les Kill Zones"
+);
 
 run();
 setInterval(run, 60 * 1000);
